@@ -59,6 +59,11 @@ ________________________________________________________________________________
 To display the help, just launch the program in a terminal.
 It will display the help of the program.
 
+== Synopsis ==
+
+$ contour_image_annotator FRAMEIMAGES
+
+where FRAMEIMAGES is the list of frames composing the animation.
 
 The following output files are generated:
 * "big_image.png" : the color collage image made by mixing the different input images
@@ -66,3 +71,9 @@ The following output files are generated:
 
 The size of these two output images is equal to the size of the biggest input image.
 In the collage image, the smaller input images are centered.
+
+== Keyboard shortcuts ==
+* 'b'                 change background color
+* 'o'                 change overlay function
+* 'c'                 use vertically constrained mode
+* 'q', Esc            quit

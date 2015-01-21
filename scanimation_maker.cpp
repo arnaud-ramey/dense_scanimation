@@ -28,20 +28,20 @@ inline cv::Vec3b current_background_color() {
   default:
     return cv::Vec3b(255, 0, 0);
     break;
-  } // end switch (filter_mode)
+  } // end switch (overlay_mode)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-int filter_function = 1;
-int MAX_FILTER_FUNCTIONS = 4;
+int overlay_function = 1;
+int MAX_overlay_FUNCTIONS = 4;
 
 ////////////////////////////////////////////////////////////////////////////////
 
 inline int image_idx(const int & x, const int & y,
                      const int & img_nb,
                      const double col_width = 1) {
-  switch(filter_function) {
+  switch(overlay_function) {
   case 0:
     return ((int) (x / col_width)) % img_nb;
     break;
@@ -55,7 +55,7 @@ inline int image_idx(const int & x, const int & y,
   default:
     return (x / 2 + y / 2) % img_nb;
     break;
-  } // end switch (filter_mode)
+  } // end switch (overlay_mode)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -71,7 +71,7 @@ inline void anim(const ImgList imgs) {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-inline TransparencyImg generate_filter(cv::Size size, const int img_nb) {
+inline TransparencyImg generate_overlay(cv::Size size, const int img_nb) {
   TransparencyImg image(size);
   image = cv::Vec4b(0, 0, 0, 255);
   for (int row = 0; row < image.rows; ++row) {
@@ -147,17 +147,17 @@ inline Img generate_mixed_image(const ImgList & img_list) {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-inline void generate_mixed_image_and_filter(const ImgList & img_list) {
+inline void generate_mixed_image_and_overlay(const ImgList & img_list) {
   Img big_image = generate_mixed_image(img_list);
-  TransparencyImg filter = generate_filter(big_image.size(), img_list.size());
+  TransparencyImg overlay = generate_overlay(big_image.size(), img_list.size());
 
   cv::imshow("big_image", big_image);
-  cv::imshow("filter", filter);
+  cv::imshow("overlay", overlay);
   cv::waitKey(1000);
   cv::destroyAllWindows();
 
   cv::imwrite("big_image.png", big_image);
-  cv::imwrite("filter.png", filter);
+  cv::imwrite("overlay.png", overlay);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -238,10 +238,11 @@ inline void paste_img(const Image & topaste, Image & dst,
 ////////////////////////////////////////////////////////////////////////////////
 
 struct CallbackData {
+  std::string win_name;
   Img* interface;
   Img* interface_with_bars;
-  Img* filter;
-  cv::Mat1b* filter_mask;
+  Img* overlay;
+  cv::Mat1b* overlay_mask;
   cv::Size big_image_size;
   short image_nb;
 };
@@ -254,7 +255,7 @@ inline void mouse_cb(int event, int x, int y, int flags, void* param) {
   d->interface->copyTo(*d->interface_with_bars);
 
   // foo tests
-  //x -= d->filter->cols / 2;  y -= d->filter->rows / 2;
+  //x -= d->overlay->cols / 2;  y -= d->overlay->rows / 2;
 
   if (constrained_mode)
     y = d->big_image_size.height / 2;
@@ -263,9 +264,9 @@ inline void mouse_cb(int event, int x, int y, int flags, void* param) {
   //             CV_RGB(255, 0, 0));
 
   // make the bars
-  paste_img(*d->filter, *d->interface_with_bars, x, y, d->filter_mask);
+  paste_img(*d->overlay, *d->interface_with_bars, x, y, d->overlay_mask);
 
-  cv::imshow("interface", *d->interface_with_bars);
+  cv::imshow(d->win_name, *d->interface_with_bars);
 
 } // end mouse_cb();
 
@@ -273,12 +274,13 @@ inline void mouse_cb(int event, int x, int y, int flags, void* param) {
 
 inline void interface(const ImgList & img_list) {
   Img big_image = generate_mixed_image(img_list);
-  Img interface, filter;
-  cv::namedWindow("interface");
-  cvMoveWindow("interface", 0, 0);
+  Img interface, overlay;
+  std::string win_name = "DenseScanimation";
+  cv::namedWindow(win_name);
+  cvMoveWindow(win_name.c_str(), 0, 0);
 
   CallbackData data;
-  cv::setMouseCallback("interface", mouse_cb, &data);
+  cv::setMouseCallback(win_name, mouse_cb, &data);
 
   while (true) {
     // init big_image
@@ -286,7 +288,7 @@ inline void interface(const ImgList & img_list) {
     interface.create(2 * big_image.rows, 2 * big_image.cols);
     interface = current_background_color();
     cv::putText(interface,
-                "f:filter b:background c:constrained",
+                "o:overlay b:background c:constrained",
                 cv::Point(10, interface.rows - 10),
                 cv::FONT_HERSHEY_PLAIN,
                 1, CV_RGB(180, 0, 0));
@@ -297,27 +299,28 @@ inline void interface(const ImgList & img_list) {
                                  big_image.rows));
     big_image.copyTo(roi);
     Img interface_with_bars = interface.clone();
-    // make filter
-    TransparencyImg filter_rgba = generate_filter(big_image.size(), img_list.size());
+    // make overlay
+    TransparencyImg overlay_rgba = generate_overlay(big_image.size(), img_list.size());
     std::vector<cv::Mat> channels;
-    cv::split(filter_rgba, channels);
-    cv::Mat1b filter_mask = channels.back();
+    cv::split(overlay_rgba, channels);
+    cv::Mat1b overlay_mask = channels.back();
     channels.pop_back();
-    cv::merge(channels, filter);
+    cv::merge(channels, overlay);
 
     // pass data
+    data.win_name = win_name;
     data.interface = &interface;
     data.interface_with_bars = &interface_with_bars;
-    data.filter = &filter;
-    data.filter_mask = &filter_mask;
+    data.overlay = &overlay;
+    data.overlay_mask = &overlay_mask;
     data.big_image_size = big_image.size();
     data.image_nb = img_list.size();
 
-    cv::imshow("interface", interface);
+    cv::imshow(win_name, interface);
 
     char c = cv::waitKey(0);
-    if (c == 'f')
-      filter_function = (filter_function + 1) % MAX_FILTER_FUNCTIONS;
+    if (c == 'o')
+      overlay_function = (overlay_function + 1) % MAX_overlay_FUNCTIONS;
     else if (c == 'b')
       background_color_idx = (background_color_idx + 1) % MAX_BACKGROUND_COLOR;
     else if (c == 'c')
@@ -328,15 +331,22 @@ inline void interface(const ImgList & img_list) {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-int main(int, char**) {
+int print_help_and_exit(int return_code) {
+  return return_code;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+int main(int argc, char** argv) {
   printf("main()\n");
+  ImgList list;
+#if 0
   // load the images
   std::string prefix = "../donjon/", suffix = ".png";
   ssize_t n_imgs =
       //7;
       13;
 
-  ImgList list;
   for (int idx = 1; idx <= n_imgs; ++idx) {
     std::ostringstream filename;
     filename << prefix << (idx < 10 ? "0" : "")
@@ -345,9 +355,22 @@ int main(int, char**) {
     cv::Mat3b img_rgb = cv::imread(filename.str(), CV_LOAD_IMAGE_ANYDEPTH | CV_LOAD_IMAGE_ANYCOLOR);
     list.push_back(img_rgb);
   } // end loop idx
+#else
+  for (int argi = 1; argi < argc; ++argi) {
+    std::string filename(argv[argi]);
+    cv::Mat3b img_rgb = cv::imread(filename, CV_LOAD_IMAGE_ANYDEPTH | CV_LOAD_IMAGE_ANYCOLOR);
+    if (img_rgb.empty()) {
+      printf("Could not read file '%s'!\n", filename.c_str());
+      continue;
+    }
+    list.push_back(img_rgb);
+  } // end argv
+#endif
+  if (list.empty())
+    print_help_and_exit(-1);
 
   // generate the mixed image
-  generate_mixed_image_and_filter(list);
+  generate_mixed_image_and_overlay(list);
   interface(list);
 
   return 0;

@@ -61,7 +61,7 @@ It will display the help of the program.
 
 == Synopsis ==
 
-$ contour_image_annotator FRAMEIMAGES
+$ dense_scanimation_maker FRAMEIMAGES
 
 where FRAMEIMAGES is the list of frames composing the animation.
 
@@ -77,3 +77,11 @@ In the collage image, the smaller input images are centered.
 * 'o'                 change overlay function
 * 'c'                 use vertically constrained mode
 * 'q', Esc            quit
+
+________________________________________________________________________________
+
+Samples
+________________________________________________________________________________
+
+Using the sample images given with the library:
+$ dense_scanimation_maker samples/donjon??.*

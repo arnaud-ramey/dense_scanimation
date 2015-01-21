@@ -67,7 +67,7 @@ where FRAMEIMAGES is the list of frames composing the animation.
 
 The following output files are generated:
 * "big_image.png" : the color collage image made by mixing the different input images
-* "filter.png" : the monochrome overlay
+* "overlay.png" :   the monochrome overlay
 
 The size of these two output images is equal to the size of the biggest input image.
 In the collage image, the smaller input images are centered.

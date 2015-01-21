@@ -18,16 +18,16 @@ int MAX_BACKGROUND_COLOR = 3;
 
 inline cv::Vec3b current_background_color() {
   switch(background_color_idx) {
-  case 0:
-    return cv::Vec3b(0, 0, 0);
-    break;
-  case 1:
-    return cv::Vec3b(255, 255, 255);
-    break;
-  case 2:
-  default:
-    return cv::Vec3b(255, 0, 0);
-    break;
+    case 0:
+      return cv::Vec3b(0, 0, 0);
+      break;
+    case 1:
+      return cv::Vec3b(255, 255, 255);
+      break;
+    case 2:
+    default:
+      return cv::Vec3b(255, 0, 0);
+      break;
   } // end switch (overlay_mode)
 }
 
@@ -42,19 +42,19 @@ inline int image_idx(const int & x, const int & y,
                      const int & img_nb,
                      const double col_width = 1) {
   switch(overlay_function) {
-  case 0:
-    return ((int) (x / col_width)) % img_nb;
-    break;
-  case 1:
-    return (x / 2 + 5 * y) % img_nb;
-    break;
-  case 2:
-    return (x / 3 + 3 * y) % img_nb;
-    break;
-  case 3:
-  default:
-    return (x / 2 + y / 2) % img_nb;
-    break;
+    case 0:
+      return ((int) (x / col_width)) % img_nb;
+      break;
+    case 1:
+      return (x / 2 + 5 * y) % img_nb;
+      break;
+    case 2:
+      return (x / 3 + 3 * y) % img_nb;
+      break;
+    case 3:
+    default:
+      return (x / 2 + y / 2) % img_nb;
+      break;
   } // end switch (overlay_mode)
 }
 
@@ -332,6 +332,25 @@ inline void interface(const ImgList & img_list) {
 ////////////////////////////////////////////////////////////////////////////////
 
 int print_help_and_exit(int return_code) {
+  std::cout << "== Synopsis ==\n"
+            << "$ dense_scanimation_maker FRAMEIMAGES\n"
+            << "where FRAMEIMAGES is the list of frames composing the animation.\n"
+            << std::endl
+            << "The following output files are generated:\n"
+            << "* \"big_image.png\" : the color collage image made by mixing the different input images\n"
+            << "* \"overlay.png\" :   the monochrome overlay\n"
+            << "The size of these two output images is equal to the size of the biggest input image.\n"
+            << "In the collage image, the smaller input images are centered.\n"
+            << std::endl
+            << "== Keyboard shortcuts ==\n"
+            << "* 'b'                 change background color\n"
+            << "* 'o'                 change overlay function\n"
+            << "* 'c'                 use vertically constrained mode\n"
+            << "* 'q', Esc            quit\n"
+            << std::endl
+            << "== Samples ==\n"
+            << "Using the sample images given with the library:\n"
+            << "$ dense_scanimation_maker samples/donjon??.*\n";
   exit(return_code);
 }
 

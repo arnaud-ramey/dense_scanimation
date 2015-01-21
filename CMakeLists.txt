@@ -1,0 +1,6 @@
+PROJECT(ANIMATION_MAKER CXX)
+SET(CMAKE_BUILD_TYPE             RelWithDebInfo)
+cmake_minimum_required(VERSION 2.8)
+FIND_PACKAGE(OpenCV)
+ADD_EXECUTABLE(scanimation_maker.exe scanimation_maker.cpp)
+TARGET_LINK_LIBRARIES(scanimation_maker.exe ${OpenCV_LIBS})

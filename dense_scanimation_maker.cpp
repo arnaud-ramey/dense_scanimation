@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <iostream>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
@@ -13,7 +14,7 @@ bool constrained_mode = true;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-int background_color_idx = 1;
+int background_color_idx = 0;
 int MAX_BACKGROUND_COLOR = 3;
 
 inline cv::Vec3b current_background_color() {
@@ -377,6 +378,8 @@ int main(int argc, char** argv) {
 #else
   for (int argi = 1; argi < argc; ++argi) {
     std::string filename(argv[argi]);
+    if (filename == "--help" || filename == "-h")
+      print_help_and_exit(0);
     cv::Mat3b img_rgb = cv::imread(filename, CV_LOAD_IMAGE_ANYDEPTH | CV_LOAD_IMAGE_ANYCOLOR);
     if (img_rgb.empty()) {
       printf("Could not read file '%s'!\n", filename.c_str());

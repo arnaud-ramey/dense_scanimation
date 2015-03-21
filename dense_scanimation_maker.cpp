@@ -157,8 +157,8 @@ inline void generate_mixed_image_and_overlay(const ImgList & img_list) {
   cv::waitKey(1000);
   cv::destroyAllWindows();
 
-  cv::imwrite("big_image.png", big_image);
-  cv::imwrite("overlay.png", overlay);
+  cv::imwrite("/tmp/big_image.png", big_image);
+  cv::imwrite("/tmp/overlay.png", overlay);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -338,8 +338,8 @@ int print_help_and_exit(int return_code) {
             << "where FRAMEIMAGES is the list of frames composing the animation.\n"
             << std::endl
             << "The following output files are generated:\n"
-            << "* \"big_image.png\" : the color collage image made by mixing the different input images\n"
-            << "* \"overlay.png\" :   the monochrome overlay\n"
+            << "* \"/tmp/big_image.png\" : the color collage image made by mixing the different input images\n"
+            << "* \"/tmp/overlay.png\" :   the monochrome overlay\n"
             << "The size of these two output images is equal to the size of the biggest input image.\n"
             << "In the collage image, the smaller input images are centered.\n"
             << std::endl

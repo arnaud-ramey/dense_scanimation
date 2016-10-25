@@ -2,6 +2,8 @@
                   |  dense_scanimation   |
                   +----------------------+
 
+[![Build Status](https://travis-ci.org/arnaud-ramey/dense_scanimation.svg)](https://travis-ci.org/arnaud-ramey/dense_scanimation)
+
 A tool for generating dense Scanimation images.
 
 License :                  see the LICENSE file.
